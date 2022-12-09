@@ -1,8 +1,10 @@
-import 'dart:ffi';
 
+import 'package:face_net_authentication/locator.dart';
+import 'dart:async';
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
-
+import '../../services/camera.service.dart';
 import '../../locator.dart';
 import '../../services/ml_service.dart';
 //import '../home/home.dart';
@@ -103,34 +105,38 @@ class _AuthButtonState extends State<AuthButton> {
 
 
   signSheet(BuildContext context) {
-    return Container(
-      padding: EdgeInsets.all(20),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
+    Size size = MediaQuery.of(context).size;
+    final _cameraService = locator<CameraService>();
 
-          Container(
-            child: Column(
-              children: [
-                AppButton(
-                  text: 'Continue',
-                  onPressed: () async {
-                   await _signIn(context);
-                  },
-                  icon: Icon(
-                    Icons.person_add,
-                    color: Colors.white,
-                  ),
-                )
-
-
-              ],
-            ),
+    return SimpleDialog( // <-- SEE HERE
+      title: const Text('Do you want to continue with this image?'),
+      children: <Widget>[
+        Container(
+          child: Image( fit: BoxFit.cover,image: FileImage(File( _cameraService.imagePath!)),
+            width: MediaQuery.of(context).size.width * 0.5,alignment: Alignment.centerLeft,
           ),
-        ],
-      ),
+          margin: EdgeInsets.all(20),
+          width: 200,
+          height: 200,
+          alignment: Alignment.center,
+        ),
+        SimpleDialogOption(
+          onPressed: ()  async {
+            await _signIn(context);
+          },
+          child: const Text('Yes'),
+        ),
+        SimpleDialogOption(
+          onPressed: () {
+            Navigator.of(context).pop();
+          },
+          child: const Text('No'),
+        ),
+
+      ],
     );
+
+
   }
 
   Future _signIn(context) async {
@@ -138,11 +144,11 @@ class _AuthButtonState extends State<AuthButton> {
     List predictedData = _mlService.predictedData;
 
      _mlService.comparision(predictedData, loggedInUser.modelData)  ;
-    Fluttertoast.showToast(msg:"$loggedInUser.modelData");
+
      bool a = _mlService.faceMatch;
     if(a == true){
-      //Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context) => HomeScreen()));
-      Fluttertoast.showToast(msg: "Your face match and the app works yayayayayyayyayay");
+      Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context) => HomeScreen()));
+
 
     }
     else

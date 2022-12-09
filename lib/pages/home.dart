@@ -1,3 +1,4 @@
+import 'package:face_net_authentication/components/background.dart';
 import 'package:face_net_authentication/constants/constants.dart';
 import 'package:face_net_authentication/locator.dart';
 import 'package:face_net_authentication/pages/db/databse_helper.dart';
@@ -19,6 +20,7 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
+
   MLService _mlService = locator<MLService>();
   FaceDetectorService _mlKitService = locator<FaceDetectorService>();
   CameraService _cameraService = locator<CameraService>();
@@ -44,55 +46,22 @@ class _MyHomePageState extends State<MyHomePage> {
 
   @override
   Widget build(BuildContext context) {
+    Size size = MediaQuery.of(context).size;
     return Scaffold(
-      appBar: AppBar(
-        leading: Container(),
-        elevation: 0,
-        backgroundColor: Colors.transparent,
-        actions: <Widget>[
-          Padding(
-            padding: EdgeInsets.only(right: 20, top: 20),
-            child: PopupMenuButton<String>(
-              child: Icon(
-                Icons.more_vert,
-                color: Colors.black,
-              ),
-              onSelected: (value) {
-                switch (value) {
-                  case 'Clear DB':
-                    DatabaseHelper _dataBaseHelper = DatabaseHelper.instance;
-                    _dataBaseHelper.deleteAll();
-                    break;
-                }
-              },
-              itemBuilder: (BuildContext context) {
-                return {'Clear DB'}.map((String choice) {
-                  return PopupMenuItem<String>(
-                    value: choice,
-                    child: Text(choice),
-                  );
-                }).toList();
-              },
-            ),
-          ),
-        ],
-      ),
-      body: !loading
-          ? SingleChildScrollView(
+      body: Background(
+          child:SingleChildScrollView(
               child: SafeArea(
                 child: Center(
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     children: <Widget>[
-                      Image(image: AssetImage('assets/logo.png')),
-                      Container(
-                        width: MediaQuery.of(context).size.width * 0.8,
-                        child: Column(
-                          children: [
-
-                          ],
-                        ),
+                      Image.asset(
+                          'assets/images/home.png',
+                        width: MediaQuery.of(context).size.width * 0.7
                       ),
+
+                      SizedBox(height: size.height * 0.05),
+
                       Column(
                         children: [
                           InkWell(
@@ -150,7 +119,12 @@ class _MyHomePageState extends State<MyHomePage> {
                             child: Container(
                               decoration: BoxDecoration(
                                 borderRadius: BorderRadius.circular(10),
-                                color: Color(0xFF0F0BDB),
+                                gradient: new LinearGradient(
+                                    colors: [
+                                      Color.fromARGB(255, 255, 136, 34),
+                                      Color.fromARGB(255, 255, 177, 41)
+                                    ]
+                                ),
                                 boxShadow: <BoxShadow>[
                                   BoxShadow(
                                     color: Colors.blue.withOpacity(0.1),
@@ -173,29 +147,22 @@ class _MyHomePageState extends State<MyHomePage> {
                                   SizedBox(
                                     width: 10,
                                   ),
+
                                   Icon(Icons.person_add, color: Colors.white)
                                 ],
                               ),
                             ),
                           ),
-                          SizedBox(
-                            height: 20,
-                            width: MediaQuery.of(context).size.width * 0.8,
-                            child: Divider(
-                              thickness: 2,
-                            ),
-                          ),
-
+                          SizedBox(height: size.height * 0.1),
                         ],
                       )
                     ],
                   ),
                 ),
               ),
-            )
-          : Center(
-              child: CircularProgressIndicator(),
             ),
+
+    ),
     );
   }
 }

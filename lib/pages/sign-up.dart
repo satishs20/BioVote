@@ -20,7 +20,7 @@ class SignUp extends StatefulWidget {
 }
 
 class SignUpState extends State<SignUp> {
-  String? imagePath;
+  late String? imagePath;
   Face? faceDetected;
   Size? imageSize;
 
@@ -78,7 +78,7 @@ class SignUpState extends State<SignUp> {
       await Future.delayed(Duration(milliseconds: 200));
       XFile? file = await _cameraService.takePicture();
 
-      imagePath = file?.path;
+      imagePath = file?.path!;
 
       setState(() {
         _bottomSheetVisible = true;
@@ -212,8 +212,10 @@ class SignUpState extends State<SignUp> {
         floatingActionButton: !_bottomSheetVisible
             ? AuthActionButton(
           onPressed: onShot,
-          reload: _reload,
+          reload: _reload
+
         )
-            : Container());
+            : Container()
+    );
   }
 }

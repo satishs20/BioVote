@@ -1,8 +1,11 @@
 import 'package:face_net_authentication/locator.dart';
-
+import 'dart:async';
+import 'dart:io';
+import 'dart:math' as math;
 import 'package:face_net_authentication/pages/widgets/app_button.dart';
 import 'package:face_net_authentication/services/ml_service.dart';
 import 'package:flutter/material.dart';
+import '../../services/camera.service.dart';
 import '../home.dart';
 import 'app_text_field.dart';
 import 'package:fluttertoast/fluttertoast.dart';
@@ -11,6 +14,8 @@ import 'package:firebase_auth/firebase_auth.dart' as eos;
 import 'package:face_net_authentication/pages/register/register.dart';
 
 class AuthActionButton extends StatefulWidget {
+
+
   AuthActionButton(
       {Key? key,
         required this.onPressed,
@@ -104,36 +109,39 @@ class _AuthActionButtonState extends State<AuthActionButton> {
   }
 
   signSheet(BuildContext context) {
-    return Container(
-      padding: EdgeInsets.all(20),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
+    Size size = MediaQuery.of(context).size;
+    final _cameraService = locator<CameraService>();
 
-          Container(
-            child: Column(
-              children: [
-
-
-                AppButton(
-                  text: 'Continue',
-                  onPressed: () async {
-                    await _signUp(context);
-                  },
-                  icon: Icon(
-                    Icons.person_add,
-                    color: Colors.white,
-                  ),
-                )
-
-
-              ],
-            ),
+    return SimpleDialog( // <-- SEE HERE
+      title: const Text('Do you want to continue with this image?'),
+      children: <Widget>[
+        Container(
+          child: Image( fit: BoxFit.cover,image: FileImage(File( _cameraService.imagePath!)),
+            width: MediaQuery.of(context).size.width * 0.5,alignment: Alignment.centerLeft,
           ),
-        ],
-      ),
+          margin: EdgeInsets.all(20),
+          width: 200,
+          height: 200,
+          alignment: Alignment.center,
+        ),
+        SimpleDialogOption(
+          onPressed: ()  async {
+            await _signUp(context);
+          },
+          child: const Text('Yes'),
+        ),
+        SimpleDialogOption(
+          onPressed: () {
+            Navigator.of(context).pop();
+          },
+          child: const Text('No'),
+        ),
+
+      ],
     );
+
+
+
   }
 
   @override
