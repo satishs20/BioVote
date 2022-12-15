@@ -10,6 +10,7 @@ import '../../services/ml_service.dart';
 //import '../home/home.dart';
 import '../home/home.dart';
 import '../model/user_model.dart';
+import '../sign-in.dart';
 import 'app_button.dart';
 import 'package:firebase_auth/firebase_auth.dart' ;
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -153,7 +154,9 @@ class _AuthButtonState extends State<AuthButton> {
     }
     else
       Fluttertoast.showToast(msg: "Your face does not match");
-
+    Timer(Duration(seconds: 3), () {
+    Navigator.push(context, MaterialPageRoute(builder: (context) =>SignIn()));
+    });
   }
 
 

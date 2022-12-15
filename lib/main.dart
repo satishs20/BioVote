@@ -1,5 +1,7 @@
 import 'package:face_net_authentication/locator.dart';
 import 'package:face_net_authentication/pages/home.dart';
+import 'package:face_net_authentication/pages/splash_screen/splash_screen.dart';
+import 'package:face_net_authentication/widget_tree.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 
@@ -18,7 +20,7 @@ class MyApp extends StatelessWidget {
         primarySwatch: Colors.blue,
         visualDensity: VisualDensity.adaptivePlatformDensity,
       ),
-      home: MyHomePage(),
+      home:const SplashScreen(),
     );
   }
 }

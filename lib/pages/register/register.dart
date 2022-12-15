@@ -52,10 +52,10 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
         validator: (value) {
           RegExp regex = new RegExp(r'^.{3,}$');
           if (value!.isEmpty) {
-            return ("Name cannot be Empty");
+            return ("Name Cannot Be Empty");
           }
           if (!regex.hasMatch(value)) {
-            return ("Enter Valid name(Min. 3 Character)");
+            return ("Enter Valid Name(Min. 3 Character)");
           }
           return null;
         },
@@ -79,7 +79,11 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
         keyboardType: TextInputType.name,
         validator: (value) {
           if (value!.isEmpty) {
-            return ("IC cannot be Empty");
+            return ("IC Cannot Be Empty");
+          }
+          if (!RegExp("^\\d{6}\\-\\d{2}\\-\\d{4}")
+              .hasMatch(value)) {
+            return ("xxxxxx-xx-xxxx IC Format");
           }
           return null;
         },
@@ -133,11 +137,12 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
         validator: (value) {
           RegExp regex = new RegExp(r'^.{6,}$');
           if (value!.isEmpty) {
-            return ("Password is required for login");
+            return ("Password is required ");
           }
           if (!regex.hasMatch(value)) {
-            return ("Enter Valid Password(Min. 6 Character)");
+            return ("Min. 6 Character");
           }
+          return null;
         },
         onSaved: (value) {
           fullNameEditingController.text = value!;
@@ -156,10 +161,14 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
     final phoneNumberField = TextFormField(
         autofocus: false,
         controller: phoneNumberEditingController,
-        obscureText: true,
+        obscureText: false,
         validator: (value) {
           if (value!.isEmpty) {
-            return ("Phone Number cannot be empty");
+            return ("Please Enter Phone Number ");
+          }
+          if (!RegExp("^\\d+")
+              .hasMatch(value)) {
+            return ("Only number please");
           }
           return null;
         },

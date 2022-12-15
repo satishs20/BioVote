@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 
 import 'package:face_net_authentication/pages/login/login.dart';
 
+import '../../auth.dart';
 import '../home.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -260,7 +261,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
   // the logout function
   Future<void> logout(BuildContext context) async {
-    await FirebaseAuth.instance.signOut();
+    await Auth().signOut();
     Navigator.of(context).pushReplacement(
         MaterialPageRoute(builder: (context) => MyHomePage()));
   }

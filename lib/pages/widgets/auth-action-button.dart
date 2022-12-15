@@ -1,7 +1,9 @@
+
 import 'package:face_net_authentication/locator.dart';
 import 'dart:async';
 import 'dart:io';
-import 'dart:math' as math;
+import 'package:face_net_authentication/locator.dart';
+
 import 'package:face_net_authentication/pages/widgets/app_button.dart';
 import 'package:face_net_authentication/services/ml_service.dart';
 import 'package:flutter/material.dart';
@@ -14,8 +16,6 @@ import 'package:firebase_auth/firebase_auth.dart' as eos;
 import 'package:face_net_authentication/pages/register/register.dart';
 
 class AuthActionButton extends StatefulWidget {
-
-
   AuthActionButton(
       {Key? key,
         required this.onPressed,
@@ -39,7 +39,6 @@ class _AuthActionButtonState extends State<AuthActionButton> {
   Future _signUp(context) async {
 
     List predictedData = _mlService.predictedData;
-    Fluttertoast.showToast(msg: "$predictedData");
 
 
     Navigator.push(
@@ -139,7 +138,6 @@ class _AuthActionButtonState extends State<AuthActionButton> {
 
       ],
     );
-
 
 
   }

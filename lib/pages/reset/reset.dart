@@ -1,6 +1,9 @@
 
 
+import 'dart:async';
+
 import 'package:face_net_authentication/Pages/model/user_model.dart';
+import 'package:face_net_authentication/pages/login/login.dart';
 import 'package:flutter/material.dart';
 
 import 'package:face_net_authentication/components/background.dart';
@@ -11,36 +14,20 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:face_net_authentication/auth.dart';
 
 import '../home.dart';
-import '../reset/reset.dart';
+import '../sign-in.dart';
 import '../start/start.dart';
 
-
-
-class LoginScreen extends StatefulWidget {
-  const LoginScreen({Key? key}) : super(key: key);
+class ResetScreen extends StatefulWidget {
+  const ResetScreen({Key? key}) : super(key: key);
 
   @override
-  _LoginScreenState createState() => _LoginScreenState();
+  _ResetScreenState createState() => _ResetScreenState();
 }
 
 
-class _LoginScreenState extends State<LoginScreen> {
-
-  // form key
+class _ResetScreenState extends State<ResetScreen> {
   final _formKey = GlobalKey<FormState>();
-
-  // editing controller
   final TextEditingController emailController = new TextEditingController();
-  final TextEditingController passwordController = new TextEditingController();
-
-  //firebase
-  final _auth = FirebaseAuth.instance;
-
-  // string for displaying the error Message
-  String? errorMessage;
-
-
-
   @override
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
@@ -69,34 +56,6 @@ class _LoginScreenState extends State<LoginScreen> {
 
     );
 
-
-
-
-    //password text field
-    final passwordField = TextFormField(
-      autofocus: false,
-      controller: passwordController,
-      obscureText: true,
-      decoration: InputDecoration(
-          labelText: "Password"
-      ),
-      validator: (value) {
-        RegExp regex = new RegExp(r'^.{6,}$');
-        if (value!.isEmpty) {
-          return ("Password is required for login");
-        }
-        if (!regex.hasMatch(value)) {
-          return ("Enter Valid Password(Min. 6 Character)");
-        }
-      },
-      onSaved: (value) {
-        passwordController.text = value!;
-      },
-    );
-
-
-
-
     return Scaffold(
       body: Background(
         child: SingleChildScrollView(
@@ -109,7 +68,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 alignment: Alignment.centerLeft,
                 padding: EdgeInsets.symmetric(horizontal: 40),
                 child: Text(
-                  "LOGIN",
+                  "Reset Password",
                   style: TextStyle(
                       fontWeight: FontWeight.bold,
                       color: Color(0xFF2661FA),
@@ -135,7 +94,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
                       emailField,
                       SizedBox(height: 20),
-                      passwordField,
+
 
                     ],
                   ),
@@ -148,27 +107,16 @@ class _LoginScreenState extends State<LoginScreen> {
               SizedBox(height: size.height * 0.05),
 
               Container(
-                  alignment: Alignment.centerRight,
-                  margin: EdgeInsets.symmetric(horizontal: 40, vertical: 10),
-                  child: TextButton(
-                    style: TextButton.styleFrom(
-                      textStyle: const TextStyle(fontSize: 12),
-                    ),
-                    onPressed: () {         Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (BuildContext context) => ResetScreen(),
-                      ),
-                    );},
-                    child: const Text('Forget Password'),
-                  )
-              ),
-
-              Container(
                 alignment: Alignment.centerRight,
                 margin: EdgeInsets.symmetric(horizontal: 40, vertical: 10),
                 child: ElevatedButton(
-                  onPressed: () => setState((){ signIn(emailController.text, passwordController.text);}),
+                  onPressed: () => setState((){ Auth().sendPasswordResetEmail(email: emailController.text);
+                    String email = emailController.text;
+                  Fluttertoast.showToast(msg: "A reset link has been sent to $email");
+                  Timer(Duration(seconds: 1), () {
+                    Navigator.push(context, MaterialPageRoute(builder: (context) =>LoginScreen()));
+                  });
+                  }),
                   style: ElevatedButton.styleFrom(shape: StadiumBorder(), padding: const EdgeInsets.all(0)),
                   child: Container(
                     alignment: Alignment.center,
@@ -185,7 +133,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     ),
                     padding: const EdgeInsets.all(0),
                     child: Text(
-                      "LOGIN",
+                      "Reset Password",
                       textAlign: TextAlign.center,
                       style: TextStyle(color: Colors.white,
                           fontWeight: FontWeight.bold
@@ -196,54 +144,10 @@ class _LoginScreenState extends State<LoginScreen> {
               ),
 
 
-          ],
+            ],
+          ),
         ),
-      ),
-    ),);
+      ),);
+
   }
-
-
-
-  void signIn(String email, String password) async {
-
-
-
-  if (_formKey.currentState!.validate()) {
-    try {
-      await Auth()
-        .signInWithEmailAndPassword(email: email, password: password)
-          .then((uid) => {
-        Fluttertoast.showToast(msg: "Login Successful"),
-        Navigator.of(context).pushReplacement(
-            MaterialPageRoute(builder: (context) => startScreen())),
-      });
-    } on FirebaseAuthException catch (error) {
-      switch (error.code) {
-        case "invalid-email":
-          errorMessage = "Your email address appears to be malformed.";
-
-          break;
-        case "wrong-password":
-          errorMessage = "Your password is wrong.";
-          break;
-        case "user-not-found":
-          errorMessage = "User with this email doesn't exist.";
-          break;
-        case "user-disabled":
-          errorMessage = "User with this email has been disabled.";
-          break;
-        case "too-many-requests":
-          errorMessage = "Too many requests";
-          break;
-        case "operation-not-allowed":
-          errorMessage = "Signing in with Email and Password is not enabled.";
-          break;
-        default:
-          errorMessage = "An undefined Error happened.";
-      }
-      Fluttertoast.showToast(msg: errorMessage!);
-      print(error.code);
-    }
-  }
-}
 }

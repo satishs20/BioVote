@@ -1,6 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
+import '../../auth.dart';
 import '../../components/background.dart';
 import '../home.dart';
 import '../sign-in.dart';
@@ -50,27 +51,25 @@ class _startScreenState extends State<startScreen> {
                     margin: EdgeInsets.symmetric(horizontal: 40, vertical: 10),
                     child: ElevatedButton(
                       onPressed: () => setState((){
+                        setState(() {});
                         Navigator.push(context, MaterialPageRoute(builder: (context) =>SignIn()));
                       }),
-                      style: ElevatedButton.styleFrom(shape: StadiumBorder(), padding: const EdgeInsets.all(0)),
+                      style: ElevatedButton.styleFrom(
+                          primary: Colors.white,
+                          shape: StadiumBorder(), padding: const EdgeInsets.all(0)),
                       child: Container(
                         alignment: Alignment.center,
                         height: 50.0,
                         width: size.width * 0.5,
                         decoration: new BoxDecoration(
                             borderRadius: BorderRadius.circular(80.0),
-                            gradient: new LinearGradient(
-                                colors: [
-                                  Color.fromARGB(255, 255, 136, 34),
-                                  Color.fromARGB(255, 255, 177, 41)
-                                ]
-                            )
+
                         ),
                         padding: const EdgeInsets.all(0),
                         child: Text(
                           "Scan",
                           textAlign: TextAlign.center,
-                          style: TextStyle(color: Colors.white,
+                          style: TextStyle(color: Colors.blue,
                               fontWeight: FontWeight.bold
                           ),
                         ),
@@ -115,7 +114,7 @@ class _startScreenState extends State<startScreen> {
   }
 
   Future<void> logout(BuildContext context) async {
-    await FirebaseAuth.instance.signOut();
+    await Auth().signOut();
     Navigator.of(context).pushReplacement(
         MaterialPageRoute(builder: (context) => MyHomePage()));
   }
