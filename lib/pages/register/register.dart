@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-
+import 'dart:convert';
 import 'package:face_net_authentication/components/background.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -9,6 +9,9 @@ import 'package:face_net_authentication/pages/model/user_model.dart';
 import 'package:face_net_authentication/pages/home.dart';
 import 'package:face_net_authentication/services/ml_service.dart';
 import 'package:face_net_authentication/locator.dart';
+import 'package:intl/intl.dart';
+
+import '../login/login.dart';
 
 class RegistrationScreen extends StatefulWidget {
 
@@ -71,20 +74,33 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
             borderRadius: BorderRadius.circular(10),
           ),
         ));
+    var now = new DateTime.now();
+    var formatter = new DateFormat('yyyy');
+    String formattedDate = formatter.format(now);
 
     //second name field
     final icNumberField = TextFormField(
         autofocus: false,
         controller: icNumberEditingController,
-        keyboardType: TextInputType.name,
+        keyboardType: TextInputType.number,
         validator: (value) {
+
           if (value!.isEmpty) {
             return ("IC Cannot Be Empty");
           }
           if (!RegExp("^\\d{6}\\-\\d{2}\\-\\d{4}")
               .hasMatch(value)) {
-            return ("xxxxxx-xx-xxxx IC Format");
+
+            return ("xxxxxx-xx-xxxx Format");
           }
+          var a = value.substring(0,2); // Hexadecimal value for 30
+          var b = int.parse(a);
+          var c = int.parse(formattedDate.substring(2,4));
+          int age = c-b;
+          if( (age < 18 && age > 0)){
+            return ("You need to be 18 years old to register");
+          }
+
           return null;
         },
         onSaved: (value) {
@@ -176,6 +192,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
           fullNameEditingController.text = value!;
         },
         textInputAction: TextInputAction.done,
+        keyboardType: TextInputType.number,
         decoration: InputDecoration(
 
           prefixIcon: Icon(Icons.phone),
@@ -302,7 +319,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
               margin: EdgeInsets.symmetric(horizontal: 40, vertical: 10),
               child: GestureDetector(
                 onTap: () => {
-                  Navigator.push(context, MaterialPageRoute(builder: (context) => MyHomePage()))
+                  Navigator.push(context, MaterialPageRoute(builder: (context) => LoginScreen()))
                 },
                 child: Text(
                   "Already Have an Account? Sign in",
@@ -320,11 +337,21 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
   }
 
 
-
+  Future<bool> ICCheck(String icNumber) async {
+    final result = await FirebaseFirestore.instance
+        .collection('users')
+        .where('icNumber', isEqualTo: icNumber)
+        .get();
+    return result.docs.isEmpty;
+  }
 
   void signUp(String email, String password) async {
-
-    if (_formKey.currentState!.validate()) {
+    final valid = await ICCheck(icNumberEditingController.text);
+    if (!valid) {
+      // username exists
+      Fluttertoast.showToast(msg: "IC number already exist");
+    }
+    else if  (_formKey.currentState!.validate()) {
       try {
         await _auth
             .createUserWithEmailAndPassword(email: email, password: password)

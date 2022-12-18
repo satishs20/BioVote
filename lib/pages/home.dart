@@ -8,7 +8,9 @@ import 'package:face_net_authentication/services/camera.service.dart';
 import 'package:face_net_authentication/services/ml_service.dart';
 import 'package:face_net_authentication/services/face_detector_service.dart';
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:intl/intl.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import 'login/login.dart';
