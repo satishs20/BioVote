@@ -44,6 +44,15 @@ dependencies:
   firebase_core: ^2.3.0
   flutter_launcher_icons: ^0.11.0
   intl: ^0.17.0
+  flutter_svg: ^1.1.6
+  places_service: ^0.1.2
+  google_maps_flutter: ^2.2.2
+  geolocator: ^8.2.1
+  geocoding: ^2.0.5
+  http:
+  uuid: ^3.0.5
+  search_map_location: ^0.0.6
+  flutter_google_places: ^0.3.0
 
 
 # For information on the generic Dart part of this file, see the

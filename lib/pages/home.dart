@@ -1,7 +1,8 @@
 import 'package:face_net_authentication/components/background.dart';
 
 import 'package:face_net_authentication/locator.dart';
-
+import 'package:face_net_authentication/pages/register/register.dart';
+import 'package:url_launcher/url_launcher.dart';
 import 'package:face_net_authentication/pages/sign-in.dart';
 import 'package:face_net_authentication/pages/sign-up.dart';
 import 'package:face_net_authentication/services/camera.service.dart';
@@ -11,6 +12,7 @@ import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:intl/intl.dart';
+import 'package:url_launcher/link.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import 'login/login.dart';
@@ -22,16 +24,19 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-
+  Future<void>? _launched;
   MLService _mlService = locator<MLService>();
   FaceDetectorService _mlKitService = locator<FaceDetectorService>();
   CameraService _cameraService = locator<CameraService>();
   bool loading = false;
 
+
   @override
   void initState() {
     super.initState();
     _initializeServices();
+
+
   }
 
   _initializeServices() async {
@@ -41,7 +46,7 @@ class _MyHomePageState extends State<MyHomePage> {
     _mlKitService.initialize();
     setState(() => loading = false);
   }
-
+  final _formKey = GlobalKey<FormState>();
 
 
   @override
@@ -112,7 +117,8 @@ class _MyHomePageState extends State<MyHomePage> {
                               Navigator.push(
                                 context,
                                 MaterialPageRoute(
-                                  builder: (BuildContext context) => SignUp(),
+                                  //builder: (BuildContext context) => SignUp(),
+                                  builder: (BuildContext context) => RegistrationScreen(key:_formKey , passedList: [],),
                                 ),
                               );
                             },
@@ -153,6 +159,56 @@ class _MyHomePageState extends State<MyHomePage> {
                               ),
                             ),
                           ),
+
+                          SizedBox(
+                            height: 10,
+                          ),
+                          InkWell(
+                            onTap: () async {
+                            final uri = 'https://mymp.org.my';
+                            if(await canLaunch(uri)){
+                               await launch(
+                               uri,
+                                 forceSafariVC: true,
+                                 forceWebView: true,
+                                 enableJavaScript: true,
+
+
+                               );
+                            }
+
+                            },
+                            child: Container(
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(10),
+                                color: Colors.red,
+                                boxShadow: <BoxShadow>[
+                                  BoxShadow(
+                                    color: Colors.blue.withOpacity(0.1),
+                                    blurRadius: 1,
+                                    offset: Offset(0, 2),
+                                  ),
+                                ],
+                              ),
+                              alignment: Alignment.center,
+                              padding: EdgeInsets.symmetric(
+                                  vertical: 14, horizontal: 16),
+                              width: MediaQuery.of(context).size.width * 0.8,
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Text(
+                                    'Check Your MP Details',
+                                    style: TextStyle(color: Colors.white),
+                                  ),
+                                  SizedBox(
+                                    width: 10,
+                                  ),
+                                  Icon(Icons.info, color: Colors.white)
+                                ],
+                              ),
+                            ),
+                          ),
                           SizedBox(height: size.height * 0.1),
                         ],
                       )
@@ -165,4 +221,7 @@ class _MyHomePageState extends State<MyHomePage> {
     ),
     );
   }
+
+
+
 }

@@ -1,16 +1,27 @@
+import 'package:face_net_authentication/autocomplete_prediction.dart';
+import 'package:face_net_authentication/network_utility.dart';
 import 'package:flutter/material.dart';
 import 'dart:convert';
+import 'package:flutter_google_places/flutter_google_places.dart';
 import 'package:face_net_authentication/components/background.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:face_net_authentication/pages/model/user_model.dart';
 import 'package:face_net_authentication/pages/home.dart';
 import 'package:face_net_authentication/services/ml_service.dart';
 import 'package:face_net_authentication/locator.dart';
 import 'package:intl/intl.dart';
+import 'package:places_service/places_service.dart';
+import 'package:search_map_location/search_map_location.dart';
+import 'package:search_map_location/utils/google_search/place.dart';
+import 'package:uuid/uuid.dart';
+import "package:http/http.dart" as http;
+import 'package:face_net_authentication/place_auto_complete_response.dart';
 
+import '../location_list_tile.dart';
 import '../login/login.dart';
 
 class RegistrationScreen extends StatefulWidget {
@@ -27,7 +38,8 @@ class RegistrationScreen extends StatefulWidget {
 
 class _RegistrationScreenState extends State<RegistrationScreen> {
 
-
+  //google maps list location
+  List<AutocompletePrediction> placePredictions = [];
   // string for displaying the error Message
   String? errorMessage;
   final MLService _mlService = locator<MLService>();
@@ -40,18 +52,103 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
   final emailEditingController = new TextEditingController();
   final passwordEditingController = new TextEditingController();
   final phoneNumberEditingController = new TextEditingController();
-
+  final addressEditingController = new TextEditingController();
   final _auth = FirebaseAuth.instance;
+  List<dynamic> _placesList = [];
+  var uuid = Uuid();
+  String _sessionToken = "123333";
+
+  void placeAutoComplete(String input) async{
+    Uri uri = Uri.https(
+        "maps.googleapis.com",
+        "maps/api/place/autocomplete/json",
+        {
+          "input":input,
+          "key":'AIzaSyBOrgaBu1i1yhWgUkZ7d9itueVzb5MnJzE',
+          "country": "my"
+        }
+    );
+    String? response = await NetworkUtility.fetchUrl(uri);
+
+    if(response != null){
+      PlaceAutocompleteResponse result= PlaceAutocompleteResponse.parseAutoCompleteResult(response);
+      if(result.predictions != null){
+        setState(() {
+          placePredictions = result.predictions;
+        });
+      }
+
+    }
+
+  }
 
   @override
+
   Widget build(BuildContext context) {
 
     Size size = MediaQuery.of(context).size;
+    double listHeight = 300;
+
+
+    final addDetails =  ListView.builder(
+
+      itemCount: placePredictions.length,
+      itemBuilder: (context,index) => LocationListTile(
+        press:(){},
+        location: placePredictions[index].description!,
+      ),
+    );
+
+
+    final addressField = TextFormField(
+
+        autofocus: false,
+        key: _formKey,
+        controller: addressEditingController,
+        onChanged: (value) async {
+          placeAutoComplete( value);
+          },
+
+
+        keyboardType: TextInputType.name,
+
+        validator: (value) {
+          RegExp regex = new RegExp(r'^.{3,}$');
+          if (value!.isEmpty) {
+            return ("Address Cannot Be Empty");
+          }
+          return null;
+        },
+
+
+        onSaved: (value) {
+          addressEditingController.text = value!;
+        },
+
+        textInputAction: TextInputAction.next,
+        decoration: InputDecoration(
+          prefixIcon: Icon(Icons.map),
+          contentPadding: EdgeInsets.fromLTRB(20, 15, 20, 15),
+          hintText: "Address",
+          border: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(10),
+          ),
+        ));
+
+
+
     //first name field
     final firstNameField = TextFormField(
         autofocus: false,
         controller: fullNameEditingController,
         keyboardType: TextInputType.name,
+        onTap: () => {
+          setState(() { listHeight = 350;
+
+
+          })
+
+        },
         validator: (value) {
           RegExp regex = new RegExp(r'^.{3,}$');
           if (value!.isEmpty) {
@@ -65,6 +162,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
         onSaved: (value) {
           fullNameEditingController.text = value!;
         },
+
         textInputAction: TextInputAction.next,
         decoration: InputDecoration(
           prefixIcon: Icon(Icons.account_circle),
@@ -191,6 +289,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
         onSaved: (value) {
           fullNameEditingController.text = value!;
         },
+        onChanged: (value) async { listHeight = 0;},
         textInputAction: TextInputAction.done,
         keyboardType: TextInputType.number,
         decoration: InputDecoration(
@@ -233,7 +332,11 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
         ),
     );
 
+
+
+
     return Scaffold(
+
       body: Background(
         child: SingleChildScrollView(
           reverse: false,
@@ -266,10 +369,21 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: <Widget>[
-
-
                     SizedBox(height: size.height * 0.03),
+
                     firstNameField,
+
+                    SizedBox(height: 20),
+
+                    addressField,
+
+                    Container(
+
+                      height: listHeight,
+
+
+                    child: addDetails,
+                    ),
                     SizedBox(height: 20),
                     icNumberField,
                     SizedBox(height: 20),
@@ -397,6 +511,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
 
     UserModel userModel = UserModel(modelData:[]);
 
+
     // writing all the values
     userModel.email = user!.email;
     userModel.uid = user.uid;
@@ -417,4 +532,8 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
         MaterialPageRoute(builder: (context) => MyHomePage()),
             (route) => false);
   }
+
+
+
+
 }
