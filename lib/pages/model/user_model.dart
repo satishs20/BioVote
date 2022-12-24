@@ -7,9 +7,10 @@ class UserModel {
   String? fullName;
   String? icNumber;
   String? phoneNumber;
+  String? address;
   List? modelData;
 
-  UserModel({this.uid, this.email, this.fullName, this.icNumber,this.phoneNumber, this.modelData,});
+  UserModel({this.uid, this.email, this.fullName, this.icNumber,this.phoneNumber,this.address, this.modelData});
 
   // receiving data from server
   factory UserModel.fromMap(map) {
@@ -19,6 +20,7 @@ class UserModel {
       fullName: map['fullName'],
       icNumber: map['icNumber'],
       phoneNumber: map['phoneNumber'],
+      address: map['address'],
       modelData: jsonDecode(map['model_data']),
     );
   }
@@ -31,6 +33,7 @@ class UserModel {
       'fullName': fullName,
       'icNumber':icNumber,
       'phoneNumber':phoneNumber,
+      'address':address,
       'model_data': jsonEncode(modelData),
     };
   }

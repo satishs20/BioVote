@@ -117,8 +117,9 @@ class _MyHomePageState extends State<MyHomePage> {
                               Navigator.push(
                                 context,
                                 MaterialPageRoute(
-                                  //builder: (BuildContext context) => SignUp(),
-                                  builder: (BuildContext context) => RegistrationScreen(key:_formKey , passedList: [],),
+                                  builder: (BuildContext context) => SignUp(),
+                                  //directly to register page, testing purposes
+                                  //builder: (BuildContext context) => RegistrationScreen(key:_formKey , passedList: [],),
                                 ),
                               );
                             },

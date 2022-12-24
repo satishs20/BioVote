@@ -82,6 +82,20 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
         ));
 
+    final address   = TextFormField(
+        autofocus: false,
+        controller:TextEditingController(text: "${loggedInUser.address}"),
+        readOnly: true,
+        textInputAction: TextInputAction.next,
+        maxLines: null,
+        decoration: InputDecoration(
+          prefixIcon: const Icon(Icons.map),
+          contentPadding: const EdgeInsets.fromLTRB(20, 15, 20, 15),
+          hintText: "Address",
+          border: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(10),
+          ),
+        ));
 
     //label field
     final nameText = const Text(
@@ -98,6 +112,12 @@ class _HomeScreenState extends State<HomeScreen> {
 
     final phoneText = const Text(
       "Phone Number",
+      style: const TextStyle( fontSize: 15, fontWeight: FontWeight.bold,
+          color:Colors.black),
+    );
+
+    final addressText = const Text(
+      "Address",
       style: const TextStyle( fontSize: 15, fontWeight: FontWeight.bold,
           color:Colors.black),
     );
@@ -221,6 +241,40 @@ class _HomeScreenState extends State<HomeScreen> {
 
                   ),
                 ),
+
+                SizedBox(height: size.height * 0.02),
+                Container(
+                  alignment: Alignment.centerLeft,
+                  margin: const EdgeInsets.symmetric(horizontal: 40),
+                  child:Form(
+
+                    child: Column(
+                      children: <Widget>[
+                        addressText
+                      ],
+                    ),
+                  ),
+                ),
+
+                Container(
+                  alignment: Alignment.center,
+                  margin: const EdgeInsets.symmetric(horizontal: 40),
+
+                  child:Form(
+
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: <Widget>[
+                        address
+                      ],
+                    ),
+
+                  ),
+                ),
+
+
+
                 SizedBox(height: size.height * 0.04),
                 Container(
                   alignment: Alignment.centerRight,

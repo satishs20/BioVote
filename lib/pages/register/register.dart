@@ -24,6 +24,7 @@ import 'package:face_net_authentication/place_auto_complete_response.dart';
 import '../location_list_tile.dart';
 import '../login/login.dart';
 
+
 class RegistrationScreen extends StatefulWidget {
 
   const RegistrationScreen(
@@ -37,15 +38,15 @@ class RegistrationScreen extends StatefulWidget {
 }
 
 class _RegistrationScreenState extends State<RegistrationScreen> {
-
-  //google maps list location
   List<AutocompletePrediction> placePredictions = [];
+
   // string for displaying the error Message
   String? errorMessage;
   final MLService _mlService = locator<MLService>();
 
   // our form key
   final _formKey = GlobalKey<FormState>();
+
   // editing Controller
   final fullNameEditingController = new TextEditingController();
   final icNumberEditingController = new TextEditingController();
@@ -54,9 +55,12 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
   final phoneNumberEditingController = new TextEditingController();
   final addressEditingController = new TextEditingController();
   final _auth = FirebaseAuth.instance;
+
+
   List<dynamic> _placesList = [];
   var uuid = Uuid();
   String _sessionToken = "123333";
+  double listHeight = 0;
 
   void placeAutoComplete(String input) async{
     Uri uri = Uri.https(
@@ -64,7 +68,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
         "maps/api/place/autocomplete/json",
         {
           "input":input,
-          "key":'AIzaSyBOrgaBu1i1yhWgUkZ7d9itueVzb5MnJzE',
+          "key":'your api key',
           "country": "my"
         }
     );
@@ -82,19 +86,18 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
 
   }
 
-  @override
 
+  @override
   Widget build(BuildContext context) {
 
     Size size = MediaQuery.of(context).size;
-    double listHeight = 300;
 
 
     final addDetails =  ListView.builder(
 
       itemCount: placePredictions.length,
       itemBuilder: (context,index) => LocationListTile(
-        press:(){},
+        press:(){addressEditingController.text = placePredictions[index].description!;},
         location: placePredictions[index].description!,
       ),
     );
@@ -103,14 +106,18 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
     final addressField = TextFormField(
 
         autofocus: false,
-        key: _formKey,
         controller: addressEditingController,
         onChanged: (value) async {
-          placeAutoComplete( value);
-          },
+          if(addressEditingController.text != ""){
+            setState(() {
+              listHeight = 300;
+            }
+            );}
+          placeAutoComplete(value);
+        },
 
-
-        keyboardType: TextInputType.name,
+        keyboardType: TextInputType.multiline,
+        maxLines: null,
 
         validator: (value) {
           RegExp regex = new RegExp(r'^.{3,}$');
@@ -119,7 +126,6 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
           }
           return null;
         },
-
 
         onSaved: (value) {
           addressEditingController.text = value!;
@@ -135,15 +141,14 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
           ),
         ));
 
-
-
     //first name field
+
     final firstNameField = TextFormField(
         autofocus: false,
         controller: fullNameEditingController,
         keyboardType: TextInputType.name,
         onTap: () => {
-          setState(() { listHeight = 350;
+          setState(() { listHeight = 0;
 
 
           })
@@ -172,15 +177,22 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
             borderRadius: BorderRadius.circular(10),
           ),
         ));
+
+    //second name field
     var now = new DateTime.now();
     var formatter = new DateFormat('yyyy');
     String formattedDate = formatter.format(now);
 
     //second name field
+    //second name field
     final icNumberField = TextFormField(
         autofocus: false,
         controller: icNumberEditingController,
         keyboardType: TextInputType.number,
+        onTap: () => {
+          setState(() { listHeight = 0;
+          })
+        },
         validator: (value) {
 
           if (value!.isEmpty) {
@@ -219,6 +231,10 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
         autofocus: false,
         controller: emailEditingController,
         keyboardType: TextInputType.emailAddress,
+        onTap: () => {
+          setState(() { listHeight = 0;
+          })
+        },
         validator: (value) {
           if (value!.isEmpty) {
             return ("Please Enter Your Email");
@@ -248,6 +264,10 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
         autofocus: false,
         controller: passwordEditingController,
         obscureText: true,
+        onTap: () => {
+          setState(() { listHeight = 0;
+          })
+        },
         validator: (value) {
           RegExp regex = new RegExp(r'^.{6,}$');
           if (value!.isEmpty) {
@@ -276,6 +296,10 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
         autofocus: false,
         controller: phoneNumberEditingController,
         obscureText: false,
+        onTap: () => {
+          setState(() { listHeight = 0;
+          })
+        },
         validator: (value) {
           if (value!.isEmpty) {
             return ("Please Enter Phone Number ");
@@ -302,152 +326,130 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
           ),
         ));
 
+
+
     //signup button
-    final signUpButton = Material(
-      child: ElevatedButton(
-        onPressed: () => setState((){signUp(emailEditingController.text, passwordEditingController.text);}),
-        style: ElevatedButton.styleFrom(shape: const StadiumBorder(), padding: const EdgeInsets.all(0)),
-          child: Container(
-            alignment: Alignment.center,
-            height: 50.0,
-            width: size.width * 0.5,
-            decoration: new BoxDecoration(
-                borderRadius: BorderRadius.circular(80.0),
-                gradient: new LinearGradient(
-                    colors: [
-                      Color.fromARGB(255, 255, 136, 34),
-                      Color.fromARGB(255, 255, 177, 41)
-                    ]
-                )
-            ),
-            padding: const EdgeInsets.all(0),
-            child: Text(
-              "REGISTER",
-              textAlign: TextAlign.center,
-              style: TextStyle(color: Colors.white,
-                  fontWeight: FontWeight.bold
-              ),
-            ),
-          ),
-        ),
-    );
-
-
 
 
     return Scaffold(
-
-      body: Background(
-        child: SingleChildScrollView(
-          reverse: false,
-          padding: const EdgeInsets.all(32),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            Container(
-              alignment: Alignment.centerLeft,
-              padding: EdgeInsets.symmetric(horizontal: 40),
-              child: Text(
-                "REGISTER",
-                style: TextStyle(
-                    fontWeight: FontWeight.bold,
-                    color: Color(0xFF2661FA),
-                    fontSize: 36
-                ),
-                textAlign: TextAlign.left,
-              ),
-            ),
-
-
-        Container(
-          alignment: Alignment.center,
-          margin: EdgeInsets.symmetric(horizontal: 40),
-
-                child:Form(
-                key: _formKey,
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: <Widget>[
-                    SizedBox(height: size.height * 0.03),
-
-                    firstNameField,
-
-                    SizedBox(height: 20),
-
-                    addressField,
-
-                    Container(
-
-                      height: listHeight,
-
-
-                    child: addDetails,
-                    ),
-                    SizedBox(height: 20),
-                    icNumberField,
-                    SizedBox(height: 20),
-                    emailField,
-                    SizedBox(height: 20),
-                    passwordField,
-                    SizedBox(height: 20),
-                    phoneNumberField,
-                    SizedBox(height: 20),
-
-                  ],
-                ),
-              ),
-            ),
-            Container(
-              alignment: Alignment.centerRight,
-              margin: EdgeInsets.symmetric(horizontal: 40, vertical: 10),
-              child: ElevatedButton(
-                onPressed: () => setState((){ signUp(emailEditingController.text, passwordEditingController.text);}),
-                style: ElevatedButton.styleFrom(shape: StadiumBorder(), padding: const EdgeInsets.all(0)),
-                child: Container(
-                  alignment: Alignment.center,
-                  height: 50.0,
-                  width: size.width * 0.5,
-                  decoration: new BoxDecoration(
-                      borderRadius: BorderRadius.circular(80.0),
-                      gradient: new LinearGradient(
-                          colors: [
-                            Color.fromARGB(255, 255, 136, 34),
-                            Color.fromARGB(255, 255, 177, 41)
-                          ]
-                      )
-                  ),
-                  padding: const EdgeInsets.all(0),
-                  child: Text(
-                    "REGISTER",
-                    textAlign: TextAlign.center,
-                    style: TextStyle(color: Colors.white,
-                        fontWeight: FontWeight.bold
+        body: Background(
+          child: SingleChildScrollView(
+            reverse: false,
+            padding: const EdgeInsets.all(32),
+            child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: <Widget>[
+                  Container(
+                    alignment: Alignment.centerLeft,
+                    padding: EdgeInsets.symmetric(horizontal: 40),
+                    child: Text(
+                      "REGISTER",
+                      style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          color: Color(0xFF2661FA),
+                          fontSize: 36
+                      ),
+                      textAlign: TextAlign.left,
                     ),
                   ),
-                ),
-              ),
-            ),
-          Container(
-              alignment: Alignment.centerRight,
-              margin: EdgeInsets.symmetric(horizontal: 40, vertical: 10),
-              child: GestureDetector(
-                onTap: () => {
-                  Navigator.push(context, MaterialPageRoute(builder: (context) => LoginScreen()))
-                },
-                child: Text(
-                  "Already Have an Account? Sign in",
-                  style: TextStyle(
-                      fontSize: 12,
-                      fontWeight: FontWeight.bold,
-                      color: Color(0xFF2661FA)
+
+
+                  Container(
+                    alignment: Alignment.center,
+                    margin: EdgeInsets.symmetric(horizontal: 40),
+
+                    child: Form(
+                      key: _formKey,
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: <Widget>[
+
+
+                          SizedBox(height: size.height * 0.03),
+                          firstNameField,
+                          SizedBox(height: 20),
+                          addressField,
+                          SizedBox(height: 20),
+                          Container(
+
+                            height: listHeight,
+
+
+                            child: addDetails,
+                          ),
+
+                          icNumberField,
+                          SizedBox(height: 20),
+                          emailField,
+                          SizedBox(height: 20),
+                          passwordField,
+                          SizedBox(height: 20),
+                          phoneNumberField,
+                          SizedBox(height: 20),
+
+                        ],
+                      ),
+                    ),
                   ),
-                ),
-              ),
-          )]
-        ),
-        ),
-      ));
+                  Container(
+                    alignment: Alignment.centerRight,
+                    margin: EdgeInsets.symmetric(horizontal: 40, vertical: 10),
+                    child: ElevatedButton(
+                      onPressed: () =>
+                          setState(() {
+                            signUp(emailEditingController.text,
+                                passwordEditingController.text);
+                          }),
+                      style: ElevatedButton.styleFrom(shape: StadiumBorder(),
+                          padding: const EdgeInsets.all(0)),
+                      child: Container(
+                        alignment: Alignment.center,
+                        height: 50.0,
+                        width: size.width * 0.5,
+                        decoration: new BoxDecoration(
+                            borderRadius: BorderRadius.circular(80.0),
+                            gradient: new LinearGradient(
+                                colors: [
+                                  Color.fromARGB(255, 255, 136, 34),
+                                  Color.fromARGB(255, 255, 177, 41)
+                                ]
+                            )
+                        ),
+                        padding: const EdgeInsets.all(0),
+                        child: Text(
+                          "REGISTER",
+                          textAlign: TextAlign.center,
+                          style: TextStyle(color: Colors.white,
+                              fontWeight: FontWeight.bold
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                  Container(
+                    alignment: Alignment.centerRight,
+                    margin: EdgeInsets.symmetric(horizontal: 40, vertical: 10),
+                    child: GestureDetector(
+                      onTap: () =>
+                      {
+                        Navigator.push(context, MaterialPageRoute(
+                            builder: (context) => MyHomePage()))
+                      },
+                      child: Text(
+                        "Already Have an Account? Sign in",
+                        style: TextStyle(
+                            fontSize: 12,
+                            fontWeight: FontWeight.bold,
+                            color: Color(0xFF2661FA)
+                        ),
+                      ),
+                    ),
+                  )
+                ]
+            ),
+          ),
+        ));
   }
 
 
@@ -518,7 +520,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
     userModel.fullName = fullNameEditingController.text;
     userModel.icNumber = icNumberEditingController.text;
     userModel.phoneNumber = phoneNumberEditingController.text;
-
+    userModel.address = addressEditingController.text;
     userModel.modelData = widget.passedList;
 
     await firebaseFirestore
