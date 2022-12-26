@@ -28,6 +28,7 @@ class ResetScreen extends StatefulWidget {
 class _ResetScreenState extends State<ResetScreen> {
   final _formKey = GlobalKey<FormState>();
   final TextEditingController emailController = new TextEditingController();
+
   @override
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
@@ -68,7 +69,7 @@ class _ResetScreenState extends State<ResetScreen> {
                 alignment: Alignment.centerLeft,
                 padding: EdgeInsets.symmetric(horizontal: 40),
                 child: Text(
-                  "Reset Password",
+                  "Change Password",
                   style: TextStyle(
                       fontWeight: FontWeight.bold,
                       color: Color(0xFF2661FA),
@@ -110,13 +111,16 @@ class _ResetScreenState extends State<ResetScreen> {
                 alignment: Alignment.centerRight,
                 margin: EdgeInsets.symmetric(horizontal: 40, vertical: 10),
                 child: ElevatedButton(
-                  onPressed: () => setState((){ Auth().sendPasswordResetEmail(email: emailController.text);
+                  onPressed: () => setState(() async {
+                  if (_formKey.currentState!.validate()) {
+
+                 await Auth().sendPasswordResetEmail(email: emailController.text);
                     String email = emailController.text;
                   Fluttertoast.showToast(msg: "A reset link has been sent to $email");
                   Timer(Duration(seconds: 1), () {
                     Navigator.push(context, MaterialPageRoute(builder: (context) =>LoginScreen()));
                   });
-                  }),
+                  }}),
                   style: ElevatedButton.styleFrom(shape: StadiumBorder(), padding: const EdgeInsets.all(0)),
                   child: Container(
                     alignment: Alignment.center,

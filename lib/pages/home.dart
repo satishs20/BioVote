@@ -165,7 +165,17 @@ class _MyHomePageState extends State<MyHomePage> {
                             height: 10,
                           ),
                           InkWell(
+
                             onTap: () async {
+                              setState(() {
+                              FloatingActionButton(
+                                child: Icon(Icons.import_export, size: 32),
+                                onPressed: () async{
+                                  closeWebView();
+
+                                },
+                              );
+                              });
                             final uri = 'https://mymp.org.my';
                             if(await canLaunch(uri)){
                                await launch(
@@ -173,9 +183,12 @@ class _MyHomePageState extends State<MyHomePage> {
                                  forceSafariVC: true,
                                  forceWebView: true,
                                  enableJavaScript: true,
+                                 webOnlyWindowName:'_self',
+
 
 
                                );
+
                             }
 
                             },

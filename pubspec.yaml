@@ -54,6 +54,8 @@ dependencies:
   search_map_location: ^0.0.6
   flutter_google_places: ^0.3.0
   rflutter_alert: ^2.0.4
+  image_picker: ^0.8.6
+
 
 
 # For information on the generic Dart part of this file, see the

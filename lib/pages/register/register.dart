@@ -69,7 +69,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
         {
           "country":'MY',
           "input":input,
-          "key":'Your Api Key',
+          "key":'AIzaSyBOrgaBu1i1yhWgUkZ7d9itueVzb5MnJzE',
 
         }
     );
@@ -98,7 +98,11 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
 
       itemCount: placePredictions.length,
       itemBuilder: (context,index) => LocationListTile(
-        press:(){addressEditingController.text = placePredictions[index].description!;},
+        press:(){addressEditingController.text = placePredictions[index].description!;
+        setState(() {
+          listHeight = 0;
+        });
+        },
         location: placePredictions[index].description!,
       ),
     );
@@ -371,7 +375,6 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                           firstNameField,
                           SizedBox(height: 20),
                           addressField,
-                          SizedBox(height: 20),
                           Container(
 
                             height: listHeight,
@@ -379,7 +382,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
 
                             child: addDetails,
                           ),
-
+                          SizedBox(height: 20),
                           icNumberField,
                           SizedBox(height: 20),
                           emailField,
@@ -434,8 +437,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                     child: GestureDetector(
                       onTap: () =>
                       {
-                        Navigator.push(context, MaterialPageRoute(
-                            builder: (context) => MyHomePage()))
+                        Navigator.push(context, MaterialPageRoute(builder: (context) => MyHomePage()))
                       },
                       child: Text(
                         "Already Have an Account? Sign in",

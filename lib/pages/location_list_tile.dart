@@ -17,8 +17,7 @@ class LocationListTile  extends StatelessWidget{
     return Container(
 
             child: Container(
-              color: Colors.grey[100],
-              padding: EdgeInsets.all(10),
+              color: Colors.white,
               child: ListView(
                 physics: const NeverScrollableScrollPhysics(),
                 shrinkWrap: true,
