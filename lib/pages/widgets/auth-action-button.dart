@@ -2,16 +2,11 @@
 import 'package:face_net_authentication/locator.dart';
 import 'dart:async';
 import 'dart:io';
-import 'package:face_net_authentication/locator.dart';
 
-import 'package:face_net_authentication/pages/widgets/app_button.dart';
 import 'package:face_net_authentication/services/ml_service.dart';
 import 'package:flutter/material.dart';
 import '../../services/camera.service.dart';
-import '../home.dart';
-import 'app_text_field.dart';
-import 'package:fluttertoast/fluttertoast.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
+
 import 'package:firebase_auth/firebase_auth.dart' as eos;
 import 'package:face_net_authentication/pages/register/register.dart';
 
@@ -125,6 +120,7 @@ class _AuthActionButtonState extends State<AuthActionButton> {
         ),
         SimpleDialogOption(
           onPressed: ()  async {
+            CameraService().dispose();
             await _signUp(context);
           },
           child: const Text('Yes'),

@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
 class Auth {
@@ -6,7 +7,8 @@ class Auth {
   User? get currentUser => _firebaseAuth.currentUser;
 
   Stream<User?> get authStateChanges => _firebaseAuth.authStateChanges();
-
+  User? user = FirebaseAuth.instance.currentUser;
+  CollectionReference users = FirebaseFirestore.instance.collection('users');
   Future<void> sendPasswordResetEmail({
     required String email,
   }) async {
@@ -23,6 +25,15 @@ class Auth {
     );
   }
 
+  Future<void> updateUser({
+    required String number,
+  }) async {
+    return users
+        .doc(user?.uid)
+        .update({'phoneNumber': "$number"})
+        .then((value) => print("User Phone Number is Updated"))
+        .catchError((error) => print("Failed to update phone number : $error"));
+  }
 
 
 

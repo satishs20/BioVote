@@ -63,6 +63,7 @@ class _LoginScreenState extends State<LoginScreen> {
         }
         return null;
       },
+      textInputAction: TextInputAction.next,
       onSaved: (value) {
         emailController.text = value!;
       },

@@ -148,7 +148,10 @@ class _AuthButtonState extends State<AuthButton> {
 
      bool a = _mlService.faceMatch;
     if(a == true){
+      CameraService().dispose();
+      Fluttertoast.showToast(msg: "Only the address and phone number can be changed. To edit, click it.");
       Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context) => HomeScreen()));
+
 
 
     }

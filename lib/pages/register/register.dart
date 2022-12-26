@@ -67,9 +67,10 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
         "maps.googleapis.com",
         "maps/api/place/autocomplete/json",
         {
+          "country":'MY',
           "input":input,
-          "key":'your api key',
-          "country": "my"
+          "key":'Your Api Key',
+
         }
     );
     String? response = await NetworkUtility.fetchUrl(uri);
